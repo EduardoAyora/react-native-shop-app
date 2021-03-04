@@ -12,6 +12,10 @@ export default function UserProductsScreen(props) {
     const userProducts = useSelector(state => state.products.userProducts)
     const dispatch = useDispatch()
 
+    const editProductHandler = id => {
+        props.navigation.navigate('EditProduct', { productId: id })
+    }
+
     return (
         <FlatList
             data={userProducts}
@@ -21,18 +25,24 @@ export default function UserProductsScreen(props) {
                     image={itemData.item.imageUrl}
                     title={itemData.item.title}
                     price={itemData.item.price}
-                    onSelect={() => {}}
+                    onSelect={() => {
+                        editProductHandler(itemData.item.id)
+                    }}
                 >
                     <Button
                         color={Colors.primary}
                         title='Edit'
-                        onPress={() => {}}
+                        onPress={() => {
+                            editProductHandler(itemData.item.id)
+                        }}
                     />
                     <Button
                         color={Colors.primary}
                         title='Delete'
                         onPress={() => {
-                            dispatch(productActions.deleteProduct(itemData.item.id))
+                            dispatch(
+                                productActions.deleteProduct(itemData.item.id)
+                            )
                         }}
                     />
                 </ProductItem>
@@ -53,6 +63,19 @@ UserProductsScreen.navigationOptions = navData => {
                     }
                     onPress={() => {
                         navData.navigation.toggleDrawer()
+                    }}
+                />
+            </HeaderButtons>
+        ),
+        headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                <Item
+                    title='Add'
+                    iconName={
+                        Platform.OS === 'android' ? 'md-create' : 'ios-create'
+                    }
+                    onPress={() => {
+                        navData.navigation.navigate('EditProduct')
                     }}
                 />
             </HeaderButtons>
