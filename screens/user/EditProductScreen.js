@@ -49,6 +49,7 @@ export default function EditProductScreen(props) {
                 )
             )
         }
+        props.navigation.goBack()
     }, [dispatch, prodId, title, description, imageUrl, price])
 
     useEffect(() => {
