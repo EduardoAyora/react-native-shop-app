@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
     View,
     ScrollView,
@@ -8,15 +8,17 @@ import {
     Platform,
 } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import HeaderButton from '../../components/UI/HeaderButton'
+import * as productsActions from '../../store/actions/products'
 
 export default function EditProductScreen(props) {
     const prodId = props.navigation.getParam('productId')
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
     )
+    const dispatch = useDispatch()
 
     const [title, setTitle] = useState(editedProduct ? editedProduct.title : '')
     const [imageUrl, setImageUrl] = useState(
@@ -27,6 +29,32 @@ export default function EditProductScreen(props) {
         editedProduct ? editedProduct.description : ''
     )
 
+    const submitHandler = useCallback(() => {
+        if (editedProduct) {
+            dispatch(
+                productsActions.updateProduct(
+                    prodId,
+                    title,
+                    description,
+                    imageUrl
+                )
+            )
+        } else {
+            dispatch(
+                productsActions.createProduct(
+                    title,
+                    description,
+                    imageUrl,
+                    +price
+                )
+            )
+        }
+    }, [dispatch, prodId, title, description, imageUrl, price])
+
+    useEffect(() => {
+        props.navigation.setParams({ submit: submitHandler })
+    }, [submitHandler])
+
     return (
         <ScrollView>
             <View style={styles.form}>
@@ -35,7 +63,7 @@ export default function EditProductScreen(props) {
                     <TextInput
                         style={styles.input}
                         value={title}
-                        onChange={text => setTitle(text)}
+                        onChangeText={text => setTitle(text)}
                     />
                 </View>
                 <View style={styles.formControl}>
@@ -43,7 +71,7 @@ export default function EditProductScreen(props) {
                     <TextInput
                         style={styles.input}
                         value={imageUrl}
-                        onChange={text => setImageUrl(text)}
+                        onChangeText={text => setImageUrl(text)}
                     />
                 </View>
                 {!editedProduct && (
@@ -52,7 +80,7 @@ export default function EditProductScreen(props) {
                         <TextInput
                             style={styles.input}
                             value={price}
-                            onChange={text => setPrice(text)}
+                            onChangeText={text => setPrice(text)}
                         />
                     </View>
                 )}
@@ -61,7 +89,7 @@ export default function EditProductScreen(props) {
                     <TextInput
                         style={styles.input}
                         value={description}
-                        onChange={text => setDescription(text)}
+                        onChangeText={text => setDescription(text)}
                     />
                 </View>
             </View>
@@ -70,12 +98,14 @@ export default function EditProductScreen(props) {
 }
 
 EditProductScreen.navigationOptions = navData => {
+    const submitFn = navData.navigation.getParam('submit')
+
     return {
         headerTitle: navData.navigation.getParam('productId')
             ? 'Edit Product'
             : 'Add Product',
-        headerRight: () => {
-            ;<HeaderButtons HeaderButtonComponent={HeaderButton}>
+        headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButton}>
                 <Item
                     title='Save'
                     iconName={
@@ -83,10 +113,10 @@ EditProductScreen.navigationOptions = navData => {
                             ? 'md-checkmark'
                             : 'ios-checkmark'
                     }
-                    onPress={() => {}}
+                    onPress={submitFn}
                 />
             </HeaderButtons>
-        },
+        ),
     }
 }
 
