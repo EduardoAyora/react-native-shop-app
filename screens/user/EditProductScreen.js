@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import HeaderButton from '../../components/UI/HeaderButton'
 import * as productsActions from '../../store/actions/products'
+import Input from '../../components/UI/Input'
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE'
 
@@ -20,11 +21,11 @@ const formReducer = (state, action) => {
     if (action.type === FORM_INPUT_UPDATE) {
         const updatedValues = {
             ...state.inputValues,
-            [action.input]: action.value
+            [action.input]: action.value,
         }
         const updatedValidities = {
             ...state.inputValidities,
-            [action.input]: action.isValid
+            [action.input]: action.isValid,
         }
         let updatedFormIsValid = true
         for (const key in updatedValidities) {
@@ -33,7 +34,7 @@ const formReducer = (state, action) => {
         return {
             formIsValid: updatedFormIsValid,
             inputValidities: updatedValidities,
-            inputValues: updatedValues
+            inputValues: updatedValues,
         }
     }
     return state
@@ -97,63 +98,66 @@ export default function EditProductScreen(props) {
         props.navigation.setParams({ submit: submitHandler })
     }, [submitHandler])
 
-    const textChangeHandler = (inputIdentifier, text) => {
-        let isValid = false
-        if (text.trim().length > 0) {
-            isValid = true
-        }
+    const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
         dispatchFormState({
             type: FORM_INPUT_UPDATE,
-            value: text,
-            isValid: isValid,
-            input: inputIdentifier
+            value: inputValue,
+            isValid: inputValidity,
+            input: inputIdentifier,
         })
-    }
+    }, [dispatchFormState])
 
     return (
         <ScrollView>
             <View style={styles.form}>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Title</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.title}
-                        onChangeText={textChangeHandler.bind(this, 'title')}
-                        autoCapitalize='sentences'
-                        autoCorrect
-                        returnKeyType='next'
-                        onEndEditing={() => {}}
-                        onSubmitEditing={() => {}}
-                    />
-                    {!formState.inputValues.title && <Text>Please enter a valid title!</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Image Url</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.imageUrl}
-                        onChangeText={textChangeHandler.bind(this, 'imageUrl')}
-                    />
-                </View>
+                <Input
+                    id='title'
+                    label='Title'
+                    errorText='Por favor ingrese un título válido!'
+                    autoCapitalize='sentences'
+                    autoCorrect
+                    returnKeyType='next'
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.title : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                />
+                <Input
+                    id='imageUrl'
+                    label='Image Url'
+                    errorText='Por favor ingrese una url de imagen válida!'
+                    returnKeyType='next'
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.imageUrl : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                />
                 {!editedProduct && (
-                    <View style={styles.formControl}>
-                        <Text style={styles.label}>Price</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={formState.inputValues.price}
-                            onChangeText={textChangeHandler.bind(this, 'price')}
-                            keyboardType='decimal-pad'
-                        />
-                    </View>
-                )}
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.description}
-                        onChangeText={textChangeHandler.bind(this, 'description')}
+                    <Input
+                        id='price'
+                        label='Price'
+                        errorText='Por favor ingrese un precio válido!'
+                        keyboardType='decimal-pad'
+                        returnKeyType='next'
+                        onInputChange={inputChangeHandler}
+                        required
+                        min={0.1}
                     />
-                </View>
+                )}
+                <Input
+                    id='description'
+                    label='Descripción'
+                    errorText='Por favor ingrese una descripción vália!'
+                    autoCapitalize='sentences'
+                    autoCorrect
+                    multiline
+                    numberOfLines={3}
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.description : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                    minLength={5}
+                />
             </View>
         </ScrollView>
     )
@@ -185,18 +189,5 @@ EditProductScreen.navigationOptions = navData => {
 const styles = StyleSheet.create({
     form: {
         margin: 20,
-    },
-    formControl: {
-        width: '100%',
-    },
-    label: {
-        fontFamily: 'open-sans-bold',
-        marginVertical: 8,
-    },
-    input: {
-        paddingHorizontal: 2,
-        paddingVertical: 5,
-        borderBottomColor: '#ccc',
-        borderBottomWidth: 1,
     },
 })
