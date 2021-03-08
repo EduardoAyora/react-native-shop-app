@@ -2,11 +2,10 @@ import React, { useEffect, useCallback, useReducer } from 'react'
 import {
     View,
     ScrollView,
-    Text,
-    TextInput,
     StyleSheet,
     Platform,
     Alert,
+    KeyboardAvoidingView,
 } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import { useSelector, useDispatch } from 'react-redux'
@@ -98,68 +97,81 @@ export default function EditProductScreen(props) {
         props.navigation.setParams({ submit: submitHandler })
     }, [submitHandler])
 
-    const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
-        dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            value: inputValue,
-            isValid: inputValidity,
-            input: inputIdentifier,
-        })
-    }, [dispatchFormState])
+    const inputChangeHandler = useCallback(
+        (inputIdentifier, inputValue, inputValidity) => {
+            dispatchFormState({
+                type: FORM_INPUT_UPDATE,
+                value: inputValue,
+                isValid: inputValidity,
+                input: inputIdentifier,
+            })
+        },
+        [dispatchFormState]
+    )
 
     return (
-        <ScrollView>
-            <View style={styles.form}>
-                <Input
-                    id='title'
-                    label='Title'
-                    errorText='Por favor ingrese un título válido!'
-                    autoCapitalize='sentences'
-                    autoCorrect
-                    returnKeyType='next'
-                    onInputChange={inputChangeHandler}
-                    initialValue={editedProduct ? editedProduct.title : ''}
-                    initiallyValid={!!editedProduct}
-                    required
-                />
-                <Input
-                    id='imageUrl'
-                    label='Image Url'
-                    errorText='Por favor ingrese una url de imagen válida!'
-                    returnKeyType='next'
-                    onInputChange={inputChangeHandler}
-                    initialValue={editedProduct ? editedProduct.imageUrl : ''}
-                    initiallyValid={!!editedProduct}
-                    required
-                />
-                {!editedProduct && (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior='padding'
+            keyboardVerticalOffset={100}
+        >
+            <ScrollView>
+                <View style={styles.form}>
                     <Input
-                        id='price'
-                        label='Price'
-                        errorText='Por favor ingrese un precio válido!'
-                        keyboardType='decimal-pad'
+                        id='title'
+                        label='Title'
+                        errorText='Por favor ingrese un título válido!'
+                        autoCapitalize='sentences'
+                        autoCorrect
                         returnKeyType='next'
                         onInputChange={inputChangeHandler}
+                        initialValue={editedProduct ? editedProduct.title : ''}
+                        initiallyValid={!!editedProduct}
                         required
-                        min={0.1}
                     />
-                )}
-                <Input
-                    id='description'
-                    label='Descripción'
-                    errorText='Por favor ingrese una descripción vália!'
-                    autoCapitalize='sentences'
-                    autoCorrect
-                    multiline
-                    numberOfLines={3}
-                    onInputChange={inputChangeHandler}
-                    initialValue={editedProduct ? editedProduct.description : ''}
-                    initiallyValid={!!editedProduct}
-                    required
-                    minLength={5}
-                />
-            </View>
-        </ScrollView>
+                    <Input
+                        id='imageUrl'
+                        label='Image Url'
+                        errorText='Por favor ingrese una url de imagen válida!'
+                        returnKeyType='next'
+                        onInputChange={inputChangeHandler}
+                        initialValue={
+                            editedProduct ? editedProduct.imageUrl : ''
+                        }
+                        initiallyValid={!!editedProduct}
+                        required
+                    />
+                    {!editedProduct && (
+                        <Input
+                            id='price'
+                            label='Price'
+                            errorText='Por favor ingrese un precio válido!'
+                            keyboardType='decimal-pad'
+                            returnKeyType='next'
+                            onInputChange={inputChangeHandler}
+                            required
+                            min={0.1}
+                        />
+                    )}
+                    <Input
+                        id='description'
+                        label='Descripción'
+                        errorText='Por favor ingrese una descripción vália!'
+                        autoCapitalize='sentences'
+                        autoCorrect
+                        multiline
+                        numberOfLines={3}
+                        onInputChange={inputChangeHandler}
+                        initialValue={
+                            editedProduct ? editedProduct.description : ''
+                        }
+                        initiallyValid={!!editedProduct}
+                        required
+                        minLength={5}
+                    />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 
