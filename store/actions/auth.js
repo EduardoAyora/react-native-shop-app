@@ -19,7 +19,13 @@ export const signup = (email, password) => {
         )
 
         if (!response.ok) {
-            throw new Error('Algo salió mal')
+            const errorResData = await response.json()
+            const errorId = errorResData.error.message
+            let message = 'Algo salió mal'
+            if (errorId === 'EMAIL_EXISTS') {
+                message = 'Este email ya existe'
+            }
+            throw new Error(message)
         }
 
         const resData = await response.json()
@@ -46,7 +52,15 @@ export const login = (email, password) => {
         )
 
         if (!response.ok) {
-            throw new Error('Algo salió mal')
+            const errorResData = await response.json()
+            const errorId = errorResData.error.message
+            let message = 'Algo salió mal'
+            if (errorId === 'EMAIL_NOT_FOUND') {
+                message = 'Este email no pudo ser encontrado'
+            } else if (errorId === 'INVALID_PASSWORD') {
+                message = 'Esta contraseña no es válida'
+            }
+            throw new Error(message)
         }
 
         const resData = await response.json()
