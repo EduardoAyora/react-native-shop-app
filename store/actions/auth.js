@@ -6,15 +6,15 @@ export const signup = (email, password) => {
         const response = await fetch(
             'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDMqJPKbhKvR4Ssme4VfWC1dwTxTxk7btI',
             {
-                method: 'POST', 
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     email: email,
                     password: password,
-                    returnSecureToken: true
-                })
+                    returnSecureToken: true,
+                }),
             }
         )
 
@@ -30,7 +30,11 @@ export const signup = (email, password) => {
 
         const resData = await response.json()
         console.log(resData)
-        dispatch({ type: SIGNUP })
+        dispatch({
+            type: SIGNUP,
+            token: resData.idToken,
+            userId: resData.localId,
+        })
     }
 }
 
@@ -39,15 +43,15 @@ export const login = (email, password) => {
         const response = await fetch(
             'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDMqJPKbhKvR4Ssme4VfWC1dwTxTxk7btI',
             {
-                method: 'POST', 
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     email: email,
                     password: password,
-                    returnSecureToken: true
-                })
+                    returnSecureToken: true,
+                }),
             }
         )
 
@@ -65,6 +69,10 @@ export const login = (email, password) => {
 
         const resData = await response.json()
         console.log(resData)
-        dispatch({ type: LOGIN })
+        dispatch({
+            type: LOGIN,
+            token: resData.idToken,
+            userId: resData.localId,
+        })
     }
 }
