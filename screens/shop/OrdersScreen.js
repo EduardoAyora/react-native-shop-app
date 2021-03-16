@@ -35,6 +35,14 @@ export default function OrdersScreen(props) {
         )
     }
 
+    if (orders.length === 0) {
+        return (
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text>No hay ordenes, empieza ordenando.</Text>
+            </View>
+        )
+    }
+
     return (
         <FlatList
             data={orders}

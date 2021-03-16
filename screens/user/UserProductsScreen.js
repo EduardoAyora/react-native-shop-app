@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, Button, Platform, Alert } from 'react-native'
+import { View, Text, FlatList, Button, Platform, Alert } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 
@@ -30,6 +30,14 @@ export default function UserProductsScreen(props) {
                     },
                 },
             ]
+        )
+    }
+
+    if (userProducts.length === 0) {
+        return (
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text>No hay productos, empieza creando algunos.</Text>
+            </View>
         )
     }
 
