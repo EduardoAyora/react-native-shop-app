@@ -12,6 +12,7 @@ import cartReducer from './store/reducers/cart'
 import ordersReducer from './store/reducers/orders'
 import authReducer from './store/reducers/auth'
 import ShopNavigator from './navigation/ShopNavigator'
+import NavigationContainer from './navigation/NavigationContainer'
 
 const rootReducer = combineReducers({
     products: productsReducer,
@@ -33,16 +34,7 @@ export default function App() {
 
     return (
         <Provider store={store}>
-            <ShopNavigator />
+            <NavigationContainer />
         </Provider>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-})
